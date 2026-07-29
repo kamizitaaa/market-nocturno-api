@@ -30,10 +30,10 @@ class CarritoController extends Controller
     // Ver el carrito actual del cliente autenticado, con sus productos
     public function index(Request $request)
     {
-        $carrito = $this->obtenerOCrearCarrito($request->user()->id);
-        $carrito->load('items.producto');
+    $carrito = $this->obtenerOCrearCarrito($request->user()->id);
+    $carrito->load('items.producto.emprendimiento');
 
-        return response()->json($carrito);
+    return response()->json($carrito);
     }
 
     // Agregar un producto al carrito (o sumarle cantidad si ya está)
