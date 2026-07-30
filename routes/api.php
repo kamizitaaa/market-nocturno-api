@@ -18,7 +18,6 @@ Route::get('/emprendimientos', [EmprendimientoController::class, 'index']);
 Route::get('/emprendimientos/{id}', [EmprendimientoController::class, 'show']);
 Route::get('/productos', [ProductoController::class, 'index']);
 Route::get('/productos/{id}', [ProductoController::class, 'show']);
-Route::post('/emprendimientos/{id}/imagen', [EmprendimientoController::class, 'subirImagen']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -48,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/emprendimientos/{id}', [EmprendimientoController::class, 'update']);
     Route::delete('/emprendimientos/{id}', [EmprendimientoController::class, 'destroy']);
     Route::get('/mis-emprendimientos', [EmprendimientoController::class, 'misEmprendimientos']);
+    Route::post('/emprendimientos/{id}/imagen', [EmprendimientoController::class, 'subirImagen']);
 
     //agregar productos
     Route::post('/productos', [ProductoController::class, 'store']);
