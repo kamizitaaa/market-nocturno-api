@@ -53,6 +53,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/productos', [ProductoController::class, 'store']);
     Route::put('/productos/{id}', [ProductoController::class, 'update']);
     Route::delete('/productos/{id}', [ProductoController::class, 'destroy']);
+    Route::post('/productos/{id}/imagen', [ProductoController::class, 'subirImagen']);
 
     //Configuracion de carrito sobre los pedidos
     Route::post('/pedidos/confirmar', [PedidoController::class, 'confirmar']);

@@ -6,6 +6,7 @@ use App\Models\Producto;
 use App\Models\Emprendimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class ProductoController extends Controller
 {
@@ -128,5 +129,46 @@ class ProductoController extends Controller
         $producto->delete();
 
         return response()->json(['message' => 'Producto eliminado correctamente']);
+    }
+
+    public function subirImagen(Request $request, $id)
+{
+    $producto = Producto::with('emprendimiento')->find($id);
+
+    if (!$producto) {
+        return response()->json(['message' => 'Producto no encontrado'], 404);
+    }
+
+    $esDueno = $producto->emprendimiento->user_id === $request->user()->id;
+    $esAdmin = in_array($request->user()->role, ['admin', 'superadmin']);
+
+    if (!$esDueno && !$esAdmin) {
+        return response()->json(['message' => 'No tienes permiso para esta acción'], 403);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'imagen' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    // Borra la imagen anterior si existía
+    if ($producto->imagen) {
+        $rutaAnterior = str_replace('/storage/', '', parse_url($producto->imagen, PHP_URL_PATH));
+        Storage::disk('public')->delete($rutaAnterior);
+    }
+
+    $ruta = $request->file('imagen')->store('productos', 'public');
+    $url = asset('storage/' . $ruta);
+
+    $producto->imagen = $url;
+    $producto->save();
+
+    return response()->json([
+        'message' => 'Imagen actualizada correctamente',
+        'producto' => $producto
+    ]);
     }
 }
