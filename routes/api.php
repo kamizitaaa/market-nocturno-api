@@ -18,6 +18,7 @@ Route::get('/emprendimientos', [EmprendimientoController::class, 'index']);
 Route::get('/emprendimientos/{id}', [EmprendimientoController::class, 'show']);
 Route::get('/productos', [ProductoController::class, 'index']);
 Route::get('/productos/{id}', [ProductoController::class, 'show']);
+Route::post('/emprendimientos/{id}/imagen', [EmprendimientoController::class, 'subirImagen']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);

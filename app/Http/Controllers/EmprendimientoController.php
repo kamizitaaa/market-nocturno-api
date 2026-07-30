@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Emprendimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class EmprendimientoController extends Controller
 {
@@ -137,4 +138,46 @@ class EmprendimientoController extends Controller
 
         return response()->json($emprendimientos);
     }
+
+    public function subirImagen(Request $request, $id)
+    {
+    $emprendimiento = Emprendimiento::find($id);
+
+    if (!$emprendimiento) {
+        return response()->json(['message' => 'Emprendimiento no encontrado'], 404);
+    }
+
+    $esDueno = $emprendimiento->user_id === $request->user()->id;
+    $esAdmin = in_array($request->user()->role, ['admin', 'superadmin']);
+
+    if (!$esDueno && !$esAdmin) {
+        return response()->json(['message' => 'No tienes permiso para esta acción'], 403);
+    }
+
+    $validator = Validator::make($request->all(), [
+        'imagen' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+    ]);
+
+    if ($validator->fails()) {
+        return response()->json(['errors' => $validator->errors()], 422);
+    }
+
+    // Borra la imagen anterior si existía
+    if ($emprendimiento->imagen) {
+        $rutaAnterior = str_replace('/storage/', '', parse_url($emprendimiento->imagen, PHP_URL_PATH));
+        Storage::disk('public')->delete($rutaAnterior);
+    }
+
+    $ruta = $request->file('imagen')->store('emprendimientos', 'public');
+    $url = asset('storage/' . $ruta);
+
+    $emprendimiento->imagen = $url;
+    $emprendimiento->save();
+
+    return response()->json([
+        'message' => 'Imagen actualizada correctamente',
+        'emprendimiento' => $emprendimiento
+    ]);
+    }
+    
 }
