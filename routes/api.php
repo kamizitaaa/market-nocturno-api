@@ -7,6 +7,7 @@ use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\EmprendimientoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PedidoController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/captcha', [AuthController::class, 'captcha']);
 Route::post('/registro', [AuthController::class, 'registro']);
@@ -33,7 +34,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/categorias', [CategoriaController::class, 'store']);
         Route::put('/categorias/{id}', [CategoriaController::class, 'update']);
         Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy']);
+        Route::put('/admin/emprendedores/{id}/mfa', [AdminController::class, 'toggleMfa']);
     });
+
+    // Dashboard admin
+    Route::get('/admin/stats', [AdminController::class, 'stats']);
+    Route::get('/admin/emprendedores', [AdminController::class, 'emprendedores']);
+    Route::post('/admin/emprendedores', [AdminController::class, 'crearEmprendedor']);
+    Route::put('/admin/emprendedores/{id}', [AdminController::class, 'actualizarEmprendedor']);
+    Route::delete('/admin/emprendedores/{id}', [AdminController::class, 'eliminarEmprendedor']);
+
 
     // Carrito
     Route::get('/carrito', [CarritoController::class, 'index']);

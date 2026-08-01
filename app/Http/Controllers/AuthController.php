@@ -63,7 +63,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    // ===== LOGIN (paso 1: valida credenciales + captcha, envía MFA) =====
+    // ===== LOGIN (paso 1: valida credenciales + captcha, envía MFA si aplica) =====
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -99,7 +99,29 @@ class AuthController extends Controller
             return response()->json(['message' => 'Credenciales incorrectas'], 401);
         }
 
-        // Generar y enviar código MFA
+        // Si el usuario NO tiene MFA activado, damos el token directo, sin pasar por el paso 2
+        if (!$user->mfa_enabled) {
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            if (in_array($user->role, ['admin', 'superadmin', 'emprendedor'])) {
+                UserSession::create([
+                    'user_id' => $user->id,
+                    'ip_address' => $request->ip(),
+                    'navegador' => $request->userAgent(),
+                    'fecha_inicio' => now(),
+                    'activa' => true,
+                ]);
+            }
+
+            return response()->json([
+                'message' => 'Login exitoso',
+                'mfa_requerido' => false,
+                'token' => $token,
+                'user' => $user,
+            ]);
+        }
+
+        // Si SÍ tiene MFA activado, seguimos el flujo normal: generar y enviar código
         $codigo = rand(100000, 999999);
 
         MfaCode::create([
@@ -115,6 +137,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Código enviado a tu correo',
+            'mfa_requerido' => true,
             'user_id' => $user->id,
         ]);
     }
