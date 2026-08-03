@@ -35,6 +35,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/categorias/{id}', [CategoriaController::class, 'update']);
         Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy']);
         Route::put('/admin/emprendedores/{id}/mfa', [AdminController::class, 'toggleMfa']);
+        Route::get('/admin/emprendimientos', [EmprendimientoController::class, 'adminIndex']);
     });
 
     // Dashboard admin

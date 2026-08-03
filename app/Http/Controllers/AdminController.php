@@ -7,24 +7,39 @@ use App\Models\Emprendimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Convocatoria;
 
 class AdminController extends Controller
 {
     // Estadísticas para el dashboard
     public function stats()
     {
-        $total = Emprendimiento::count();
+        $totalEmprendimientos = Emprendimiento::count();
         $activos = Emprendimiento::where('estado', 'activo')->count();
-        $destacados = Emprendimiento::where('estado', 'destacado')->count();
-        $nuevos = Emprendimiento::whereMonth('created_at', now()->month)
+        $destacados = Emprendimiento::where('destacado', true)->count();
+        $nuevosEmprendimientos = Emprendimiento::whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
 
+        $totalEmprendedores = User::where('role', 'emprendedor')->count();
+        $nuevosEmprendedores = User::where('role', 'emprendedor')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $totalClientes = User::where('role', 'cliente')->count();
+
+        $convocatoriasActivas = Convocatoria::where('activa', true)->count();
+
         return response()->json([
-            'total' => $total,
+            'total' => $totalEmprendimientos,
             'activos' => $activos,
-            'nuevos' => $nuevos,
+            'nuevos' => $nuevosEmprendimientos,
             'destacados' => $destacados,
+            'total_emprendedores' => $totalEmprendedores,
+            'nuevos_emprendedores' => $nuevosEmprendedores,
+            'total_clientes' => $totalClientes,
+            'convocatorias_activas' => $convocatoriasActivas,
         ]);
     }
 
