@@ -8,6 +8,7 @@ use App\Http\Controllers\EmprendimientoController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ConvocatoriaController;
 
 Route::get('/captcha', [AuthController::class, 'captcha']);
 Route::post('/registro', [AuthController::class, 'registro']);
@@ -19,6 +20,9 @@ Route::get('/emprendimientos', [EmprendimientoController::class, 'index']);
 Route::get('/emprendimientos/{id}', [EmprendimientoController::class, 'show']);
 Route::get('/productos', [ProductoController::class, 'index']);
 Route::get('/productos/{id}', [ProductoController::class, 'show']);
+Route::get('/convocatorias', [ConvocatoriaController::class, 'index']);
+Route::get('/convocatorias/{id}', [ConvocatoriaController::class, 'show']);
+Route::post('/convocatorias/{id}/inscribirse', [ConvocatoriaController::class, 'inscribirse']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -36,6 +40,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy']);
         Route::put('/admin/emprendedores/{id}/mfa', [AdminController::class, 'toggleMfa']);
         Route::get('/admin/emprendimientos', [EmprendimientoController::class, 'adminIndex']);
+        Route::get('/admin/convocatorias', [ConvocatoriaController::class, 'adminIndex']);
+        Route::post('/convocatorias', [ConvocatoriaController::class, 'store']);
+        Route::put('/convocatorias/{id}', [ConvocatoriaController::class, 'update']);
+        Route::delete('/convocatorias/{id}', [ConvocatoriaController::class, 'destroy']);
+        Route::put('/convocatorias/{id}/toggle', [ConvocatoriaController::class, 'toggleActiva']);
+        Route::post('/convocatorias/{id}/imagen', [ConvocatoriaController::class, 'subirImagen']);
+        Route::get('/admin/convocatorias/{id}/participantes', [ConvocatoriaController::class, 'participantes']);
     });
 
     // Dashboard admin
