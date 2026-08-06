@@ -9,6 +9,8 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\PedidoController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConvocatoriaController;
+use App\Http\Controllers\AcercaController;
+use App\Http\Controllers\ContactoController;
 
 Route::get('/captcha', [AuthController::class, 'captcha']);
 Route::post('/registro', [AuthController::class, 'registro']);
@@ -23,6 +25,10 @@ Route::get('/productos/{id}', [ProductoController::class, 'show']);
 Route::get('/convocatorias', [ConvocatoriaController::class, 'index']);
 Route::get('/convocatorias/{id}', [ConvocatoriaController::class, 'show']);
 Route::post('/convocatorias/{id}/inscribirse', [ConvocatoriaController::class, 'inscribirse']);
+Route::get('/acerca', [AcercaController::class, 'getInfo']);
+Route::get('/equipo', [AcercaController::class, 'equipoIndex']);
+Route::get('/galeria', [AcercaController::class, 'galeriaIndex']);
+Route::post('/contacto', [ContactoController::class, 'store']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
@@ -47,6 +53,19 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/convocatorias/{id}/toggle', [ConvocatoriaController::class, 'toggleActiva']);
         Route::post('/convocatorias/{id}/imagen', [ConvocatoriaController::class, 'subirImagen']);
         Route::get('/admin/convocatorias/{id}/participantes', [ConvocatoriaController::class, 'participantes']);
+        Route::put('/acerca', [AcercaController::class, 'updateInfo']);
+        Route::post('/acerca/imagen', [AcercaController::class, 'subirImagenHistoria']);
+
+        Route::post('/equipo', [AcercaController::class, 'equipoStore']);
+        Route::put('/equipo/{id}', [AcercaController::class, 'equipoUpdate']);
+        Route::delete('/equipo/{id}', [AcercaController::class, 'equipoDestroy']);
+        Route::post('/equipo/{id}/foto', [AcercaController::class, 'equipoSubirFoto']);
+
+        Route::post('/galeria', [AcercaController::class, 'galeriaStore']);
+        Route::delete('/galeria/{id}', [AcercaController::class, 'galeriaDestroy']);
+    
+        Route::get('/admin/contactos', [ContactoController::class, 'adminIndex']);
+        Route::delete('/contactos/{id}', [ContactoController::class, 'destroy']);
     });
 
     // Dashboard admin
