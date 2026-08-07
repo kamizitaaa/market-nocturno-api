@@ -10,7 +10,7 @@ class UserSession extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'ip_address', 'navegador',
+        'user_id', 'token_id', 'ip_address', 'navegador',
         'fecha_inicio', 'activa'
     ];
 

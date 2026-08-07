@@ -11,6 +11,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConvocatoriaController;
 use App\Http\Controllers\AcercaController;
 use App\Http\Controllers\ContactoController;
+use App\Http\Controllers\SessionController;
 
 Route::get('/captcha', [AuthController::class, 'captcha']);
 Route::post('/registro', [AuthController::class, 'registro']);
@@ -66,6 +67,9 @@ Route::middleware('auth:sanctum')->group(function () {
     
         Route::get('/admin/contactos', [ContactoController::class, 'adminIndex']);
         Route::delete('/contactos/{id}', [ContactoController::class, 'destroy']);
+
+        Route::get('/admin/sesiones', [SessionController::class, 'index']);
+        Route::put('/admin/sesiones/{id}/cerrar', [SessionController::class, 'cerrar']);
     });
 
     // Dashboard admin

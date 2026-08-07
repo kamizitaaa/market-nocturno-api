@@ -101,11 +101,13 @@ class AuthController extends Controller
 
         // Si el usuario NO tiene MFA activado, damos el token directo, sin pasar por el paso 2
         if (!$user->mfa_enabled) {
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $tokenResult = $user->createToken('auth_token');
+            $token = $tokenResult->plainTextToken;
 
             if (in_array($user->role, ['admin', 'superadmin', 'emprendedor'])) {
                 UserSession::create([
                     'user_id' => $user->id,
+                    'token_id' => $tokenResult->accessToken->id,
                     'ip_address' => $request->ip(),
                     'navegador' => $request->userAgent(),
                     'fecha_inicio' => now(),
@@ -168,12 +170,14 @@ class AuthController extends Controller
         $mfa->update(['usado' => true]);
 
         $user = User::findOrFail($request->user_id);
-        $token = $user->createToken('auth_token')->plainTextToken;
-
+        $tokenResult = $user->createToken('auth_token');
+        $token = $tokenResult->plainTextToken;
+        
         // Registrar sesión (solo para admin/superadmin/emprendedor)
         if (in_array($user->role, ['admin', 'superadmin', 'emprendedor'])) {
             UserSession::create([
                 'user_id' => $user->id,
+                'token_id' => $tokenResult->accessToken->id,
                 'ip_address' => $request->ip(),
                 'navegador' => $request->userAgent(),
                 'fecha_inicio' => now(),
